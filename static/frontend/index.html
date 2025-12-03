@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StudyCast – Turn Notes Into a Podcast</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="/static/frontend/style.css" />
+</head>
+<body>
+  <div class="app-root">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="logo-circle">SC</div>
+        <div class="logo-text">
+          <h1>StudyCast</h1>
+          <p>Turn your study notes into podcasts, summaries and flashcards.</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <a href="https://github.com/yourusername/studycast" target="_blank" class="topbar-link">
+          GitHub
+        </a>
+      </div>
+    </header>
+
+    <!-- Main layout -->
+    <main class="main-layout">
+      <!-- Left: input panel -->
+      <section class="panel panel-input">
+        <h2 class="panel-title">1. Source material</h2>
+        <p class="panel-desc">
+          Upload a PDF or paste your notes. The app will generate a podcast script, summary and flashcards.
+        </p>
+
+        <!-- File upload -->
+        <div class="field">
+          <label class="field-label">Upload PDF (optional)</label>
+          <label class="file-drop" for="fileInput">
+            <input type="file" id="fileInput" accept="application/pdf" />
+            <span class="file-drop-main">
+              <span id="fileName" class="file-name">Drop PDF here or click to browse</span>
+              <span class="file-hint">Max ~20 MB, text-based PDFs work best.</span>
+            </span>
+          </label>
+        </div>
+
+        <!-- Text input -->
+        <div class="field">
+          <label class="field-label">
+            Or paste your text
+            <span class="field-label-sub">(used if no PDF is uploaded)</span>
+          </label>
+          <textarea
+            id="textInput"
+            rows="7"
+            placeholder="Paste your lecture notes, textbook excerpt, or any text you want turned into a podcast..."
+          ></textarea>
+        </div>
+
+        <!-- Options -->
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">Podcast length</label>
+            <select id="durationSelect">
+              <option value="5">~5 minutes</option>
+              <option value="10">~10 minutes</option>
+              <option value="20">~20 minutes</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Tone / style</label>
+            <select id="styleSelect">
+              <option value="dynamic_duo">Dynamic Duo (two friendly hosts)</option>
+              <option value="serious_prof">Serious Professor</option>
+              <option value="casual_friend">Casual Friend explaining</option>
+              <option value="anime_senpai">Anime Senpai explains</option>
+            </select>
+          </div>
+
+                    <!-- NEW: AI settings -->
+          <div class="flex-box">
+            <div class="field">
+              <label class="field-label">LLM provider</label>
+              <select id="llmProviderSelect">
+                <option value="">Auto</option>
+                <option value="openai">OpenAI</option>
+                <option value="ollama">Ollama (local)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label">
+                LLM model
+                </label>
+              <select id="llmModelSelect">
+                <option value="">Auto (server default)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label">TTS provider</label>
+              <select id="ttsProviderSelect">
+                <option value="">Auto (server default)</option>
+                <option value="openai">OpenAI</option>
+                <option value="local">Local (Piper)</option>
+                <option value="none">No audio</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="generateBtn" class="btn-primary">Generate podcast</button>
+          <button id="cancelBtn" class="btn-secondary hidden">Cancel</button>
+          <div id="loadingIndicator" class="loading hidden">
+            <span></span><span></span><span></span>
+          </div>
+          <span id="statusText" class="status-text">Ready when you are.</span>
+        </div>
+      </section>
+
+      <!-- Right: output panel -->
+      <section class="panel panel-output">
+        <h2 class="panel-title">2. Results</h2>
+        <p class="panel-desc">
+          Once generated, you can switch between summary, script, flashcards and audio.
+        </p>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab-button active" data-tab="summaryTab">Summary</button>
+          <button class="tab-button" data-tab="scriptTab">Script</button>
+          <button class="tab-button" data-tab="flashcardsTab">Flashcards</button>
+          <button class="tab-button" data-tab="audioTab">Audio</button>
+        </div>
+
+        <!-- Tab content -->
+        <div class="tab-content-wrapper">
+          <!-- Summary -->
+          <div id="summaryTab" class="tab-content active">
+            <div id="summaryContent" class="content-box placeholder">
+              No summary yet. Submit your notes to generate one.
+            </div>
+          </div>
+
+          <!-- Script -->
+          <div id="scriptTab" class="tab-content">
+            <div id="scriptContent" class="content-box placeholder">
+              No script yet. You’ll see a timestamped dialogue here.
+            </div>
+          </div>
+
+          <!-- Flashcards -->
+          <div id="flashcardsTab" class="tab-content">
+            <div id="flashcardsContent" class="content-box placeholder">
+              No flashcards yet. We’ll generate Q/A pairs from your material.
+            </div>
+          </div>
+
+          <!-- Audio -->
+        <div id="audioTab" class="tab-content">
+          <div id="audioPlaceholder" class="audio-placeholder">
+            No audio yet. Generate a podcast to listen to it here.
+          </div>
+
+            <div id="audioPlayerShell" class="audio-shell hidden">
+              <div class="audio-main">
+                <button id="audioPlayPause" class="audio-icon-btn" type="button">
+                  ▶
+                </button>
+
+                <div class="audio-meta">
+                  <div class="audio-title">Generated podcast</div>
+                  <div class="audio-time-row">
+                    <span id="audioCurrent">0:00</span>
+                    <span class="audio-time-separator">/</span>
+                    <span id="audioDuration">0:00</span>
+                  </div>
+                  <div id="audioWaveform" class="waveform">
+                    <!-- Bars will be inserted by JS -->
+                  </div>
+                </div>
+
+                <a id="audioDownload" class="audio-icon-btn audio-download-btn" href="#" download>
+                  <b>⭳</b>
+                </a>
+              </div>
+            </div>
+
+            <!-- Hidden native audio element, used only for playback -->
+            <audio id="audioPlayer" preload="metadata"></audio>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/frontend/script.js"></script>
+</body>
+</html>
