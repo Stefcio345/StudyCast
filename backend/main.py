@@ -216,6 +216,8 @@ async def process(
         return JSONResponse(status_code=400, content={"error": str(e)})
     except RuntimeError as e:
         return JSONResponse(status_code=503, content={"error": str(e)})
+    except FileNotFoundError as e:
+        return JSONResponse(status_code=404, content={"error": str(e)})
     except Exception as e:
         set_stage(task_id, "error")
         logger.error("[/api/process] Unexpected error:\n%s", traceback.format_exc())

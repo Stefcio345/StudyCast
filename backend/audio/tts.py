@@ -2,6 +2,7 @@ import uuid
 from pathlib import Path
 import subprocess
 from typing import Optional, List, Tuple
+import os
 
 from ..config import (
     TTS_PROVIDER,
@@ -227,6 +228,8 @@ def _generate_tts_openai(script: str) -> str:
                 segment_paths.append(seg_path)
 
             except Exception as e:
+                if "401" in str(e) or "No API key" in str(e) or "invalid_api_key" in str(e):
+                    raise ValueError("OpenAI API key is missing or invalid.") from e
                 print(f"OpenAI TTS error on segment {idx}:", e)
                 # If any segment fails, bail out
                 for p in segment_paths:
@@ -244,7 +247,8 @@ def _generate_tts_openai(script: str) -> str:
                 p.unlink(missing_ok=True)
 
         return f"/static/audio/{final_filename}"
-
+    except ValueError as e:
+        raise ValueError("OpenAI API key is missing or invalid.") from e
     except Exception as e:
         print("OpenAI TTS error:", e)
         # cleanup on any top-level failure
@@ -276,6 +280,12 @@ def _generate_tts_local_piper(script: str) -> str:
 
     segment_files = []
 
+    if not os.path.exists(PIPER_MODEL_A):
+        raise FileNotFoundError(f"Model file not found: {PIPER_MODEL_A}")
+
+    if not os.path.exists(PIPER_MODEL_B):
+        raise FileNotFoundError(f"Model file not found: {PIPER_MODEL_B}")
+
     try:
         for idx, (voice, text) in enumerate(segments):
             # Decide which Piper model to use
@@ -286,9 +296,9 @@ def _generate_tts_local_piper(script: str) -> str:
 
             safe_text = _shorten_for_tts(text, max_chars=1200)
 
-            print(model)
-
             seg_path = AUDIO_DIR / f"{file_id}_seg_{idx}.wav"
+
+
             cmd = [
                 PIPER_COMMAND,
                 "--model", str(model),

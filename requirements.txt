@@ -5,3 +5,5 @@ PyPDF2
 openai
 python-dotenv
 piper-tts
+requests
+pdfminer.six
