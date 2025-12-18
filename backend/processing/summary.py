@@ -2,7 +2,7 @@ from typing import List, Optional, Awaitable, Callable
 from .chunker import chunk_text
 from ..llm_adapter import llm_chat
 
-CancelCheck = Callable[[], Awaitable[None]]  # async () -> None
+CancelCheck = Callable[[], Awaitable[None]]
 
 
 async def summarize_text(
@@ -17,7 +17,7 @@ async def summarize_text(
 
     for ch in chunks:
         if cancel_check:
-            await cancel_check()  # <-- check before each LLM call
+            await cancel_check()  #check before each LLM call
 
         messages = [
             {

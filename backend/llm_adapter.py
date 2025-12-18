@@ -14,7 +14,7 @@ from .ai_client import get_client
 async def llm_chat(
     messages: List[Dict[str, str]],
     *,
-    json_mode: bool = False,  # we keep this flag just for your own logic
+    json_mode: bool = False,
     provider: Optional[str] = None,
     model: Optional[str] = None,
 ) -> str:
@@ -25,7 +25,6 @@ async def llm_chat(
             client = get_client()
             use_model = model or OPENAI_MODEL
 
-            # ✅ NO format / NO response_format
             resp = client.responses.create(
                 model=use_model,
                 input=messages,

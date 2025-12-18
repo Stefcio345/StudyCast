@@ -1,4 +1,3 @@
-# backend/task_manager.py
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -17,14 +16,14 @@ class TaskState:
     id: str
     created_at: datetime = field(default_factory=datetime.utcnow)
     cancelled: bool = False
-    stage: str = "queued"  # <--- NEW (queued / extracting / summary / flashcards / script / audio / done / error)
+    stage: str = "queued"  # (queued / extracting / summary / flashcards / script / audio / done / error)
 
 @dataclass
 class TaskState:
     id: str
     created_at: datetime = field(default_factory=datetime.utcnow)
     cancelled: bool = False
-    # place for future fields:
+    # for future fields:
     # status: str = "running"
     # result: Optional[dict] = None
 

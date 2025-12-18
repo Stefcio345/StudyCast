@@ -55,7 +55,7 @@ Requirements:
     ]
 
     if cancel_check:
-        await cancel_check()  # <-- before LLM call
+        await cancel_check()  #before LLM call
 
     script = await llm_chat(
         messages,

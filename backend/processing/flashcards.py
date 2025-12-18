@@ -48,7 +48,7 @@ Text:
 
     parsed = try_json_load(raw)
 
-    # --- 🔧 accept both object and array ---
+    # --- accept both object and array ---
     if isinstance(parsed, dict):
         parsed_list = [parsed]
     elif isinstance(parsed, list):

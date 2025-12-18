@@ -12,7 +12,6 @@ from .task_manager import (
     TaskCancelledError,
     create_task,
     cancel_task,
-    clear_task,
     make_cancel_check,
     set_stage,
     get_task,
@@ -59,10 +58,9 @@ INDEX_HTML = FRONTEND_DIR / "index.html"
 (app.mount("/static", StaticFiles(directory=str(BASE_DIR)), name="static"))
 
 
-# CORS so you can open frontend from file:// or localhost:*
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # be stricter in prod if you want
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -225,7 +223,4 @@ async def process(
             status_code=500,
             content={"error": "Internal server error"},
         )
-    #finally:
-        # NOTE: if you want to inspect state later, you can skip clear_task here
-        # clear_task(task_id)
 

@@ -21,5 +21,5 @@ TTS_VOICE_ALT = os.getenv("TTS_VOICE_ALT", "echo")
 
 # Local Piper
 PIPER_COMMAND = os.getenv("PIPER_COMMAND", "piper")
-PIPER_MODEL_A = os.getenv("PIPER_MODEL_A", "")
-PIPER_MODEL_B = os.getenv("PIPER_MODEL_B", "")
+PIPER_MODEL_A = Path(".") / os.getenv("PIPER_MODEL_A", "")
+PIPER_MODEL_B = Path(".") / os.getenv("PIPER_MODEL_B", "")

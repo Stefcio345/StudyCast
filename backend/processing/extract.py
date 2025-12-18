@@ -13,6 +13,7 @@ async def read_pdf_text(upload_file: UploadFile) -> str:
         return ""
 
     # 1) PyPDF2
+    # TODO: maybe use LlamaParse
     try:
         reader = PdfReader(BytesIO(content))
         pages_text = []
@@ -80,15 +81,8 @@ def clean_extracted_text(raw: str) -> str:
         collapsed = " ".join(line.split())
         cleaned_lines.append(collapsed)
 
-    # Rejoin lines
     text = "\n".join(cleaned_lines)
-
-    # Remove more than 2 empty lines in a row
     text = re.sub(r"\n{3,}", "\n\n", text)
-
-    # Trim spaces around punctuation (", ." -> ",", etc.)
     text = re.sub(r"\s+([.,!?;:])", r"\1", text)
-
-    # Final strip
     return text.strip()
 
