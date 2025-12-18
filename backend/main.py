@@ -213,8 +213,10 @@ async def process(
         set_stage(task_id, "error")
         return JSONResponse(status_code=400, content={"error": str(e)})
     except RuntimeError as e:
+        set_stage(task_id, "error")
         return JSONResponse(status_code=503, content={"error": str(e)})
     except FileNotFoundError as e:
+        set_stage(task_id, "error")
         return JSONResponse(status_code=404, content={"error": str(e)})
     except Exception as e:
         set_stage(task_id, "error")
